@@ -32,4 +32,5 @@
 
 #Directories
 .vs/
+.vscode/
 build/
