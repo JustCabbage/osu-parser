@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "TimingPointEntry.hpp"
 
 namespace Parser
 {
@@ -52,5 +53,6 @@ namespace Parser
         bool DisableVideo;
         bool VisualOverride;
         std::uint8_t ManiaScrollSpeed;
+        std::vector<TimingPointEntry> TimingPoints;
     };
 }

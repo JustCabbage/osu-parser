@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <any>
+
 namespace Parser
 {
     class Reader
@@ -38,8 +39,8 @@ namespace Parser
             do 
             {
                 Byte = this->ReadType<std::uint8_t>();
-                Result |= (Byte & 0x7f) << ShiftAmount;
-                ShiftAmount += 7;
+                Result |= (Byte & 0x7F) << ShiftAmount;
+                ShiftAmount += 0x7;
             } 
             while (Byte & 0x80);
             return Result;
@@ -48,11 +49,11 @@ namespace Parser
         std::string ReadString()
         {
             const std::uint8_t Byte = this->ReadType<std::uint8_t>();
-            if (Byte != 0x0b)
+            if (Byte != 0x0B)
                 return "N/A";
             const std::uint64_t Size = this->ReadUleb128();
             std::string Buffer(Size, ' ');
-            for (std::uint32_t i = 0; i < Size; ++i) 
+            for (std::uint32_t i = 0; i < Size; i++) 
             {
                 Buffer[i] = static_cast<char>(this->m_CurrentStream.get());
             }
@@ -67,7 +68,7 @@ namespace Parser
             return Value;
         }
 
-        void Seek(std::int32_t Amount)
+        void Seek(const std::int32_t& Amount)
         {
             this->m_CurrentStream.seekg(Amount, std::ios::cur);
         }

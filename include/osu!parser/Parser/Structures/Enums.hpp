@@ -8,7 +8,7 @@ namespace Parser
         None = 0,
         Normal,
         Moderator,
-        Suppoerter,
+        Supporter,
         Friend,
         Peppy,
         WorldCupStaff
