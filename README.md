@@ -21,5 +21,19 @@ int main()
 }
 ```
 
+## Beatmap Parsing
+```c++
+#include <osu!parser/Parser.hpp>
+
+int main()
+{
+    const std::string SongsPath = std::string(getenv("localappdata")) + "\\osu!\\Songs\\RandomBeatmap\\Beatmap.osu";
+    
+    Parser::Beatmap ParsedBeatmap(SongsPath);
+
+    std::cout << ParsedBeatmap.General.AudioFilename << "\n";
+}
+```
+
 # Credits
 - [osu!wiki](https://github.com/ppy/osu/wiki/)

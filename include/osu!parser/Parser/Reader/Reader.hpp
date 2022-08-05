@@ -8,6 +8,9 @@ namespace Parser
     class Reader
     {
     public:
+
+        Reader() {}
+        
         Reader(const std::string& StreamPath)
         {
             this->SetStream(StreamPath);
