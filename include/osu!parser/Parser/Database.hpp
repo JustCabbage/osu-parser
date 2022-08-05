@@ -3,16 +3,21 @@
 #include <string>
 #include <vector>
 #include "Reader/Reader.hpp"
-#include "Structures/BeatmapEntry.hpp"
-#include "Structures/Enums.hpp"
+#include "Structures/Database/BeatmapEntry.hpp"
+#include "Structures/Database/Enums.hpp"
 
 namespace Parser
 {
     class Database
     {
     public:
-        Database(const std::string& DatabasePath) : m_Reader(DatabasePath) 
-        { 
+        Database(const std::string& DatabasePath)
+        {
+            this->Reset();
+            if(!m_Reader.SetStream(DatabasePath))
+            {
+                return;
+            }
             this->OsuVersion = this->m_Reader.ReadType<std::int32_t>();
             this->FolderCount = this->m_Reader.ReadType<std::int32_t>();
             this->AccountUnlocked = this->m_Reader.ReadType<bool>();
@@ -102,6 +107,22 @@ namespace Parser
                 this->Beatmaps.push_back(Entry);
             }
             this->Permissions = static_cast<Permission>(this->m_Reader.ReadType<std::int32_t>());
+        }
+        ~Database()
+        {
+            this->Reset();
+        }
+    private:
+        void Reset()
+        {
+            this->OsuVersion = 0;
+            this->FolderCount = 0;
+            this->AccountUnlocked = false;
+            this->DateTime = 0;
+            this->PlayerName = "N/A";
+            this->TotalBeatmaps = 0;
+            this->Beatmaps.clear();
+            Permission Permissions = Permission::None;
         }
     public:
         std::int32_t OsuVersion = 0;
