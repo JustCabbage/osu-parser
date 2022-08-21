@@ -2,8 +2,8 @@
 
 int main()
 {
-    const std::string GamePath = std::string(getenv("localappdata")) + "\\osu!\\";
-    const std::string SongsPath = std::string(getenv("localappdata")) + "\\osu!\\Songs\\";
+    const std::string GamePath = std::string(std::getenv("localappdata")) + "\\osu!\\";
+    const std::string SongsPath = std::string(std::getenv("localappdata")) + "\\osu!\\Songs\\";
 
     const Parser::Database ParsedDatabase(GamePath + "osu!.db");
 
@@ -16,5 +16,10 @@ int main()
 
     const Parser::Beatmap ParsedBeatmap(SongsPath + Beatmap.FolderName + "\\" + Beatmap.BeatmapPath);
 
-    std::cout << ParsedBeatmap.General.AudioFilename << "\n";
+    std::cout << "Audio Filename - " << ParsedBeatmap.General.AudioFilename << "\n";
+    std::cout << "Artist - " << ParsedBeatmap.Metadata.Artist << "\n";
+    std::cout << "Approach Rate - " << ParsedBeatmap.Difficulty.ApproachRate << "\n";
+    std::cout << "Grid Size - " << ParsedBeatmap.Editor.GridSize << "\n";
+    std::cout << "Total Hit Objects - " << ParsedBeatmap.HitObjects.size() << "\n";
+    std::cout << "Total Timing Points - " << ParsedBeatmap.TimingPoints.size() << "\n";
 }
