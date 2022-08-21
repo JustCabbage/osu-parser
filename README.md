@@ -31,7 +31,9 @@ int main()
     
     Parser::Beatmap ParsedBeatmap(SongsPath);
 
-    std::cout << ParsedBeatmap.General.AudioFilename << "\n";
+    std::cout << "Audio Filename - " << ParsedBeatmap.General.AudioFilename << "\n";
+    std::cout << "Total Hit Objects - " << ParsedBeatmap.HitObjects.size() << "\n";
+    std::cout << "Total Timing Points - " << ParsedBeatmap.TimingPoints.size() << "\n";
 }
 ```
 
