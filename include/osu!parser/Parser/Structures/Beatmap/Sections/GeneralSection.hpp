@@ -1,10 +1,7 @@
 #pragma once
-#include <string>
 #include <vector>
-#include <map>
 #include <iostream>
 #include "Section.hpp"
-#include "../Utilities.hpp"
 
 namespace Parser
 {
@@ -14,18 +11,7 @@ namespace Parser
         GeneralSection() {}
         void Parse(std::vector<std::string>& Lines) override
         {
-            for(const std::string& Line : Lines)
-            {
-                if(Line.find(":") == std::string::npos)
-                {
-                    continue;
-                }
-                std::vector<std::string> SplitLine = Utilities::Split(Line, ':');
-                if(SplitLine.size() > 1)
-                {
-                    this->InsertAttribute(SplitLine[0], Utilities::Trim(SplitLine[1]));
-                }
-            }
+            this->LoadAttributes(Lines);
 
             this->AudioFilename = this->GetAttribute("AudioFilename");
             this->AudioLeadIn = this->GetAttribute("AudioLeadIn");

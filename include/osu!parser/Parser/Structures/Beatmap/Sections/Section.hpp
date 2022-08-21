@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <map>
+#include "../Utilities.hpp"
 
 namespace Parser
 {
@@ -13,6 +14,23 @@ namespace Parser
         {
             return this->m_SectionMap[Key].size() ? this->m_SectionMap[Key] : "N/A";
         }
+
+        void LoadAttributes(const std::vector<std::string>& Lines)
+        {
+            for(const std::string& Line : Lines)
+            {
+                if(Line.find(":") == std::string::npos)
+                {
+                    continue;
+                }
+                std::vector<std::string> SplitLine = Utilities::Split(Line, ':');
+                if(SplitLine.size() > 1)
+                {
+                    this->InsertAttribute(SplitLine[0], Utilities::Trim(SplitLine[1]));
+                }
+            }
+        }
+        
         void InsertAttribute(const std::string& Key, const std::string& Value)
         {
             this->m_SectionMap[Key] = Value;
