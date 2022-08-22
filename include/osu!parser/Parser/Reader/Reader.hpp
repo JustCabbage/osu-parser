@@ -76,6 +76,11 @@ namespace Parser
             this->m_CurrentStream.seekg(Amount, std::ios::cur);
         }
 
+        std::ifstream& GetStream()
+        {
+            return this->m_CurrentStream;
+        }
+
     private:
         std::ifstream m_CurrentStream;
     };
