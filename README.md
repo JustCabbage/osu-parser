@@ -2,6 +2,14 @@
 
 ### A C++ library to parse osu! filetypes
 
+# Installation
+```
+git clone --recursive https://github.com/JustCabbage/osu-parser.git
+```
+## Project Setup
+```CMake
+target_include_directories(ProjectName PUBLIC osu-parser/include)
+```
 # Examples:
 
 ## Database Parsing
