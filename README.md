@@ -37,5 +37,21 @@ int main()
 }
 ```
 
+## Replay Parsing
+```c++
+#include <osu!parser/Parser.hpp>
+
+int main()
+{
+    const std::string ReplayPath = std::string(std::getenv("localappdata")) + "\\osu!\\Replays\\MyReplay.osr";
+    
+    Parser::Replay ParsedReplay(ReplayPath);
+
+    std::cout << "Parsed " << ParsedReplay.Actions.size() << " Replay Actions\n";
+    std::cout << "Replay Score - " << ParsedReplay.Score << "\n";
+}
+```
+
 # Credits
 - [osu!wiki](https://github.com/ppy/osu/wiki/)
+- [pocketlzma](https://github.com/SSBMTonberry/pocketlzma)
