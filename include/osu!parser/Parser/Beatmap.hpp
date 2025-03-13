@@ -32,7 +32,7 @@ namespace Parser
             {
                 CurrentLine = Utilities::Trim(CurrentLine);
                 static std::string CurrentSection = "General";
-                if(CurrentLine.find("[") != std::string::npos && CurrentLine.find("]") != std::string::npos)
+                if(CurrentLine.find('[') != std::string::npos && CurrentLine.find(']') != std::string::npos)
                 {
                     CurrentSection = Utilities::Split(Utilities::Split(CurrentLine, '[')[1], ']')[0];
                 }

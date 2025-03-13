@@ -19,11 +19,11 @@ namespace Parser
         {
             for(const std::string& Line : Lines)
             {
-                if(Line.find(":") == std::string::npos)
+                if(Line.find(':') == std::string::npos)
                 {
                     continue;
                 }
-                std::vector<std::string> SplitLine = Utilities::Split(Line, ':');
+                std::vector<std::string> SplitLine = Utilities::Split(Line, ':', true);
                 if(SplitLine.size() > 1)
                 {
                     this->InsertAttribute(SplitLine[0], Utilities::Trim(SplitLine[1]));
