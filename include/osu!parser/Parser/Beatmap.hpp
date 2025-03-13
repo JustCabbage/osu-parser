@@ -13,6 +13,8 @@
 #include "Structures/Beatmap/Sections/DifficultySection.hpp"
 #include "Structures/Beatmap/Sections/EditorSection.hpp"
 
+static constexpr int MINIMUM_LINE_CHARACTER = 3;
+
 namespace Parser
 {
     class Beatmap
@@ -31,15 +33,15 @@ namespace Parser
             while(std::getline(m_CurrentStream, CurrentLine))
             {
                 CurrentLine = Utilities::Trim(CurrentLine);
-                static std::string CurrentSection = "General";
-                if(CurrentLine.find('[') != std::string::npos && CurrentLine.find(']') != std::string::npos)
+                static std::string CurrentSection;
+				if (!CurrentLine.empty() && CurrentLine.front() == '[' && CurrentLine.back() == ']')
                 {
                     CurrentSection = Utilities::Split(Utilities::Split(CurrentLine, '[')[1], ']')[0];
-                }
-                if(CurrentLine.size() < 3 || CurrentLine.find("Unicode") != std::string::npos || CurrentLine.find(CurrentSection) != std::string::npos)
-                {
                     continue;
-                }   
+                }
+				// In >=C++11, std::string can save UTF-8 string (non-ascii char will be saved as 2 bytes, but in that one byte it looks weird)
+                if (CurrentLine.size() < MINIMUM_LINE_CHARACTER) continue;
+
                 this->m_Sections[CurrentSection].push_back(CurrentLine);
             }
 
