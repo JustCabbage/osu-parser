@@ -16,7 +16,7 @@
 namespace Parser
 {
     static constexpr int MINIMUM_LINE_CHARACTERS = 3;
-    static constexpr std::string NA = "N/A";
+    static const std::string NA = "N/A";
 
     class Beatmap
     {
