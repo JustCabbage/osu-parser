@@ -72,20 +72,28 @@ namespace Parser
                 else Object.sliderParams = std::nullopt;
                 /// as Spinner
 				if (Object.type.Spinner) {
-					Object.spinnerParams->endTime = std::stoi(SplitObject[5]);
+					Object.endTime = std::stoi(SplitObject[5]);
 				}
-				else Object.spinnerParams = std::nullopt;
 
-				// Parsing hitSample
-				if (Object.type.Slider && SplitObject.size() >= 11) {
-					Object.hitSample = HitObject::HitSample(SplitObject[10]);
-				}
-                else if (Object.type.Spinner && SplitObject.size() >= 7) {
-					Object.hitSample = HitObject::HitSample(SplitObject[6]);
+                // while HoldNote is special case
+                if (Object.type.HoldNote) {
+                    auto list = Utilities::Split(SplitObject[5], ':', true);
+                    Object.endTime = std::stoi(list.front());
+                    Object.hitSample = HitObject::HitSample(list.back());
                 }
-				else if (Object.type.HitCircle && SplitObject.size() >= 6) {
-					Object.hitSample = HitObject::HitSample(SplitObject[5]);
-				}
+
+				// Parsing hitSample for other
+                if (!Object.type.HoldNote) {
+                    if (Object.type.Slider && SplitObject.size() >= 11) {
+                        Object.hitSample = HitObject::HitSample(SplitObject[10]);
+                    }
+                    else if (Object.type.Spinner && SplitObject.size() >= 7) {
+                        Object.hitSample = HitObject::HitSample(SplitObject[6]);
+                    }
+                    else if (Object.type.HitCircle && SplitObject.size() >= 6) {
+                        Object.hitSample = HitObject::HitSample(SplitObject[5]);
+                    }
+                }
 
                 this->HitObjects.push_back(Object);
             }

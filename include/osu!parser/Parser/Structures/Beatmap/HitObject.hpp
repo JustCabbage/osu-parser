@@ -176,10 +176,6 @@ namespace Parser
 			SliderCurve curve;
 			EdgeHitsounds edgeHitsounds; // <edgeSounds + edgeSets> list
 		};
-		struct SpinnerParams
-		{
-			unsigned int endTime = 0;
-		};
 		struct HitSample
 		{
 			// https://osu.ppy.sh/wiki/en/Client/File_formats/osu_%28file_format%29#hitsounds:~:text=enabled%20by%20default.-,Custom%20hit%20samples,-Usage%20of%20hitSample
@@ -247,7 +243,11 @@ namespace Parser
 		HitObjectType type;
 		Hitsound hitSound;
 		std::optional<SliderParams> sliderParams = SliderParams();
-		std::optional<SpinnerParams> spinnerParams = SpinnerParams();
+		std::optional<unsigned int> endTime = std::nullopt;
+		//? Future Idea: Calculate Slider's endTime
+		// Slider endTime can be calculated through slider length, but
+		// to do it we need to know SliderMultiplier, SV and beatLength, which is not provided in HitObject
+		// https://osu.ppy.sh/wiki/en/Client/File_formats/osu_%28file_format%29#holds-(osu!mania-only):~:text=length%20/%20(SliderMultiplier%20*%20100%20*%20SV)%20*%20beatLength
 		HitSample hitSample;
 	};
 }
