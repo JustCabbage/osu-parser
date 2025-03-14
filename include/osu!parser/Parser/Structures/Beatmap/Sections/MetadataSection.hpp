@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <iostream>
+
 #include "Section.hpp"
 
 namespace Parser
@@ -8,7 +8,9 @@ namespace Parser
     class MetadataSection : public Section
     {
     public:
-        MetadataSection() {}
+        MetadataSection()
+        {
+        }
         void Parse(std::vector<std::string>& Lines) override
         {
             this->LoadAttributes(Lines);
@@ -22,8 +24,9 @@ namespace Parser
             this->Source = this->GetAttribute("Source");
             this->BeatmapID = this->GetAttribute("BeatmapID");
             this->BeatmapSetID = this->GetAttribute("BeatmapSetID");
-			this->Tags = Utilities::Split(this->GetAttribute("Tags"), ' ');
+            this->Tags = Utilities::Split(this->GetAttribute("Tags"), ' ');
         }
+
     public:
         std::string Title;
         std::string TitleUnicode;
@@ -36,4 +39,4 @@ namespace Parser
         std::string BeatmapSetID;
         std::vector<std::string> Tags;
     };
-}
+} // namespace Parser

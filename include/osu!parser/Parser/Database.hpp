@@ -2,6 +2,7 @@
 #define LEGACY 20140609
 #include <string>
 #include <vector>
+
 #include "Reader/Reader.hpp"
 #include "Structures/Database/BeatmapEntry.hpp"
 #include "Structures/Database/Enums.hpp"
@@ -14,7 +15,7 @@ namespace Parser
         Database(const std::string& DatabasePath)
         {
             this->Reset();
-            if(!m_Reader.SetStream(DatabasePath))
+            if (!m_Reader.SetStream(DatabasePath))
             {
                 return;
             }
@@ -24,9 +25,12 @@ namespace Parser
             this->DateTime = this->m_Reader.ReadType<std::int64_t>();
             this->PlayerName = this->m_Reader.ReadString();
             this->TotalBeatmaps = this->m_Reader.ReadType<std::int32_t>();
-            for(std::int32_t i = 0;  i < this->TotalBeatmaps; i++)
+            for (std::int32_t i = 0; i < this->TotalBeatmaps; i++)
             {
                 BeatmapEntry Entry;
+                if (this->OsuVersion < 20191106)
+                    Entry.Size = this->m_Reader.ReadType<std::int32_t>();
+
                 Entry.Artist = this->m_Reader.ReadString();
                 Entry.ArtistUnicode = this->m_Reader.ReadString();
                 Entry.Title = this->m_Reader.ReadString();
@@ -41,21 +45,31 @@ namespace Parser
                 Entry.SliderCount = this->m_Reader.ReadType<std::int16_t>();
                 Entry.SpinnerCount = this->m_Reader.ReadType<std::int16_t>();
                 Entry.LastModificationTime = this->m_Reader.ReadType<std::int64_t>();
-                Entry.ApproachRate = this->m_Reader.ReadType<std::float_t>();
-                Entry.CircleSize = this->m_Reader.ReadType<std::float_t>();
-                Entry.HealthDrainRate = this->m_Reader.ReadType<std::float_t>();
-                Entry.OverallDifficulty = this->m_Reader.ReadType<std::float_t>(); 
+                if (this->OsuVersion >= LEGACY)
+                {
+                    Entry.ApproachRate = this->m_Reader.ReadType<std::float_t>();
+                    Entry.CircleSize = this->m_Reader.ReadType<std::float_t>();
+                    Entry.HealthDrainRate = this->m_Reader.ReadType<std::float_t>();
+                    Entry.OverallDifficulty = this->m_Reader.ReadType<std::float_t>();
+                }
+                else
+                {
+                    Entry.ApproachRate = this->m_Reader.ReadType<std::int8_t>();
+                    Entry.CircleSize = this->m_Reader.ReadType<std::int8_t>();
+                    Entry.HealthDrainRate = this->m_Reader.ReadType<std::int8_t>();
+                    Entry.OverallDifficulty = this->m_Reader.ReadType<std::int8_t>();
+                }
                 Entry.SliderVelocity = this->m_Reader.ReadType<std::double_t>();
 
-                if(this->OsuVersion >= LEGACY)
+                if (this->OsuVersion >= LEGACY)
                 {
-                    for(std::int32_t j = 0; j < 4; j++)
+                    for (std::int32_t j = 0; j < 4; j++)
                     {
                         // Add Dictionary Parsing
                         std::int32_t Count = this->m_Reader.ReadType<std::int32_t>();
-                        for(std::int32_t k = 0; k < Count; k++)
+                        for (std::int32_t k = 0; k < Count; k++)
                         {
-                            this->m_Reader.Seek(14);
+                            this->m_Reader.Seek(this->OsuVersion > 2025107 ? 10 : 14);
                         }
                     }
                 }
@@ -63,9 +77,9 @@ namespace Parser
                 Entry.DrainTime = this->m_Reader.ReadType<std::int32_t>();
                 Entry.TotalTime = this->m_Reader.ReadType<std::int32_t>();
                 Entry.HoverPreviewTime = this->m_Reader.ReadType<std::int32_t>();
-                
+
                 std::int32_t TimingPointCount = this->m_Reader.ReadType<std::int32_t>();
-                for(std::int32_t j = 0; j < TimingPointCount; j++)
+                for (std::int32_t j = 0; j < TimingPointCount; j++)
                 {
                     TimingPointEntry TimingPoint;
                     TimingPoint.BPM = this->m_Reader.ReadType<std::double_t>();
@@ -98,7 +112,7 @@ namespace Parser
                 Entry.DisableStoryboard = this->m_Reader.ReadType<bool>();
                 Entry.DisableVideo = this->m_Reader.ReadType<bool>();
                 Entry.VisualOverride = this->m_Reader.ReadType<bool>();
-                if(this->OsuVersion < LEGACY)
+                if (this->OsuVersion < LEGACY)
                 {
                     std::int16_t UnknownShort = this->m_Reader.ReadType<std::int16_t>();
                 }
@@ -112,6 +126,7 @@ namespace Parser
         {
             this->Reset();
         }
+
     private:
         void Reset()
         {
@@ -124,6 +139,7 @@ namespace Parser
             this->Beatmaps.clear();
             Permission Permissions = Permission::None;
         }
+
     public:
         std::int32_t OsuVersion = 0;
         std::int32_t FolderCount = 0;
@@ -133,7 +149,8 @@ namespace Parser
         std::int32_t TotalBeatmaps = 0;
         std::vector<BeatmapEntry> Beatmaps = {};
         Permission Permissions = Permission::None;
+
     private:
         Reader m_Reader;
     };
-}
+} // namespace Parser
