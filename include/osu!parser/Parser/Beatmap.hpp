@@ -16,7 +16,6 @@
 namespace Parser
 {
     static constexpr int MINIMUM_LINE_CHARACTERS = 3;
-    static const std::string NA = "N/A";
 
     class Beatmap
     {
@@ -29,7 +28,7 @@ namespace Parser
                 return;
             }
 
-            std::string CurrentLine = NA;
+            std::string CurrentLine;
             std::getline(m_CurrentStream, CurrentLine);
             while(std::getline(m_CurrentStream, CurrentLine))
             {
