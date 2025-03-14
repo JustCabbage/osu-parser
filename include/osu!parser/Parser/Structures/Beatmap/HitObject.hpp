@@ -1,26 +1,33 @@
 #pragma once
 #include <osu!parser/Parser/Utilities.hpp>
 #include <optional>
-#include <variant>
+
+static enum class TypeBitmap : std::int32_t
+{
+	HIT_CIRCLE = 1 << 0,
+	SLIDER = 1 << 1,
+	SPINNER = 1 << 3,
+	HOLD_NOTE = 1 << 7, // osu!mania
+
+	NEW_COMBO = 1 << 2,
+	COLOR_JUMP0 = 1 << 4,
+	COLOR_JUMP1 = 1 << 5,
+	COLOR_JUMP2 = 1 << 6
+};
+static enum class HitsoundBitmap : std::uint8_t
+{
+	// https://osu.ppy.sh/wiki/en/Client/File_formats/osu_%28file_format%29#sliders:~:text=mania%20hold%20note.-,Hitsounds,-The%20hitSound%20bit
+
+	NORMAL = 1 << 0,
+	// below is additional
+	WHISTLE = 1 << 1,
+	FINISH = 1 << 2,
+	CLAP = 1 << 3
+};
+static bool isBitEnable(const std::int32_t value, const std::int32_t bitmask) { return (value & bitmask) != 0; }
 
 namespace Parser
 {
-	enum class TypeBitmap : std::int32_t
-	{
-		HIT_CIRCLE = 1 << 0,
-		SLIDER = 1 << 1,
-		SPINNER = 1 << 3,
-	};
-	enum class HitsoundBitmap : std::uint8_t
-	{
-		// https://osu.ppy.sh/wiki/en/Client/File_formats/osu_%28file_format%29#sliders:~:text=mania%20hold%20note.-,Hitsounds,-The%20hitSound%20bit
-
-		NORMAL = 1 << 0,
-		// below is additional
-		WHISTLE = 1 << 1,
-		FINISH = 1 << 2,
-		CLAP = 1 << 3
-	};
 	enum class SampleSetType : std::int32_t
 	{
 		NO_CUSTOM = 0,
@@ -37,9 +44,9 @@ namespace Parser
 
 		void import(const std::int32_t hitsound)
 		{
-			whistle = (hitsound & std::int32_t(HitsoundBitmap::WHISTLE)) != 0;
-			finish = (hitsound & std::int32_t(HitsoundBitmap::FINISH)) != 0;
-			clap = (hitsound & std::int32_t(HitsoundBitmap::CLAP)) != 0;
+			whistle = isBitEnable(hitsound, std::int32_t(HitsoundBitmap::WHISTLE));
+			finish = isBitEnable(hitsound, std::int32_t(HitsoundBitmap::FINISH));
+			clap = isBitEnable(hitsound, std::int32_t(HitsoundBitmap::CLAP));
 		}
 		std::int32_t to_int() const
 		{
@@ -53,10 +60,35 @@ namespace Parser
 		Hitsound() = default;
 		Hitsound(const std::int32_t hitsound_int) { import(hitsound_int); }
 	};
-
 	struct HitObjectType
 	{
-		
+		bool HitCircle = false;
+		bool Slider = false;
+		bool Spinner = false;
+		bool HoldNote = false; // osu!mania
+
+		bool isNewCombo = false;
+		std::int32_t comboColor = 1;
+
+		void import(const std::int32_t value, const bool isFirstNote = false, const std::int32_t oldComboColor = 1)
+		{
+			HitCircle = isBitEnable(value, std::int32_t(TypeBitmap::HIT_CIRCLE));
+			Slider = isBitEnable(value, std::int32_t(TypeBitmap::SLIDER));
+			Spinner = isBitEnable(value, std::int32_t(TypeBitmap::SPINNER));
+			HoldNote = isBitEnable(value, std::int32_t(TypeBitmap::HOLD_NOTE));
+			isNewCombo = isBitEnable(value, std::int32_t(TypeBitmap::NEW_COMBO));
+
+			bool bit4 = isBitEnable(value, std::int32_t(TypeBitmap::COLOR_JUMP0));
+			bool bit5 = isBitEnable(value, std::int32_t(TypeBitmap::COLOR_JUMP1));
+			bool bit6 = isBitEnable(value, std::int32_t(TypeBitmap::COLOR_JUMP2));
+			std::int32_t colorJump = (bit6 << 2) | (bit5 << 1) | bit4;
+
+			if (isFirstNote) comboColor = colorJump + 1;
+			else comboColor = (isNewCombo) ? ((oldComboColor+colorJump)%8+1) : oldComboColor;
+		}
+
+		HitObjectType() = default;
+		HitObjectType(const std::int32_t value, const bool isFirstNote = false, const std::int32_t oldComboColor = 1) { import(value, isFirstNote, oldComboColor); }
 	};
 
 	struct HitObject
@@ -139,14 +171,14 @@ namespace Parser
 				EdgeHitsounds(const std::string edgeSounds_str, const std::string edgeSets_str) { import(edgeSounds_str, edgeSets_str); }
 			};
 
-			std::int32_t slides = 1; // aka Repeats
-			std::double_t length = 0; // aka PixelLength
+			unsigned int slides = 1; // aka Repeats
+			unsigned int length = 0; // aka PixelLength
 			SliderCurve curve;
 			EdgeHitsounds edgeHitsounds; // <edgeSounds + edgeSets> list
 		};
 		struct SpinnerParams
 		{
-			std::int32_t endTime = 0;
+			unsigned int endTime = 0;
 		};
 		struct HitSample
 		{
@@ -154,8 +186,8 @@ namespace Parser
 
 			SampleSetType normalSet = SampleSetType::NO_CUSTOM;
 			SampleSetType additionSet = SampleSetType::NO_CUSTOM;
-			std::int32_t index = 0;
-			std::int32_t volume = 0;
+			int index = 0;
+			int volume = 0;
 			std::string filename;
 
 			HitSample() = default;
@@ -211,8 +243,8 @@ namespace Parser
 		};
 
 		std::int32_t x = 0, y = 0;
-		std::int32_t time = 0;
-		TypeBitmap type = TypeBitmap::HIT_CIRCLE;
+		unsigned int time = 0;
+		HitObjectType type;
 		Hitsound hitSound;
 		std::optional<SliderParams> sliderParams = SliderParams();
 		std::optional<SpinnerParams> spinnerParams = SpinnerParams();
