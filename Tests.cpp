@@ -14,13 +14,13 @@ int main()
 
     const Parser::Beatmap ParsedBeatmap(SongsPath + Beatmap.FolderName + "\\" + Beatmap.BeatmapPath);
 
-	std::cout << "Overall Difficulty - " << ParsedBeatmap.Difficulty.OverallDifficulty << "\n";
+    std::cout << "Overall Difficulty - " << ParsedBeatmap.Difficulty.OverallDifficulty << "\n";
     std::cout << "Audio Filename - " << ParsedBeatmap.General.AudioFilename << "\n";
     std::cout << "Artist - " << ParsedBeatmap.Metadata.Artist << "\n";
     std::cout << "Approach Rate - " << ParsedBeatmap.Difficulty.ApproachRate << "\n";
     std::cout << "Grid Size - " << ParsedBeatmap.Editor.GridSize << "\n";
     std::cout << "Total Hit Objects - " << ParsedBeatmap.HitObjects.size() << "\n";
-    std::cout << "Total Timing Points - " << ParsedBeatmap.TimingPoints.size() << "\n";
+    std::cout << "Total Timing Points - " << ParsedBeatmap.InheritedTimingPoints.size() + ParsedBeatmap.UninheritedTimingPoints.size() << "\n";
 
     const Parser::Replay ParsedReplay(ReplaysPath + "MyReplay.osr");
 
