@@ -1,18 +1,35 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace Parser::Utilities
 {
-    inline std::vector<std::string> Split(const std::string &Input, char Delimeter) 
+    inline std::vector<std::string> Split(const std::string &Input, char Delimeter, bool onlyTwoPart = false) 
     {
         std::vector<std::string> Output;
         std::stringstream Stream(Input);
-        std::string CurrentLine = "";
+        std::string CurrentLine;
 
-        while (std::getline(Stream, CurrentLine, Delimeter))
+        /**
+		 *  Why onlyTwoPart?
+		 *
+		 *  Because beatmap name can be "Operation: Zenithfall" - https://osu.ppy.sh/beatmapsets/2287992#osu/4881796
+		 *  (includes ':' in name).
+         */
+        if (onlyTwoPart)
         {
-            Output.push_back(CurrentLine);
+			std::getline(Stream, CurrentLine, Delimeter);
+			Output.push_back(CurrentLine);
+			std::getline(Stream, CurrentLine);
+			Output.push_back(CurrentLine);
+        }
+        else
+        {
+			while (std::getline(Stream, CurrentLine, Delimeter))
+			{
+				Output.push_back(CurrentLine);
+			}
         }
 
         return Output;

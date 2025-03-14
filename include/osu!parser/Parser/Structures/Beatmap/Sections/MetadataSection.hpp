@@ -22,6 +22,7 @@ namespace Parser
             this->Source = this->GetAttribute("Source");
             this->BeatmapID = this->GetAttribute("BeatmapID");
             this->BeatmapSetID = this->GetAttribute("BeatmapSetID");
+			this->Tags = Utilities::Split(this->GetAttribute("Tags"), ' ');
         }
     public:
         std::string Title;
@@ -33,5 +34,6 @@ namespace Parser
         std::string Source;
         std::string BeatmapID;
         std::string BeatmapSetID;
+        std::vector<std::string> Tags;
     };
 }

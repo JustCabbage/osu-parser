@@ -12,18 +12,20 @@ namespace Parser
     protected:
         std::string GetAttribute(const std::string& Key)
         {
-            return this->m_SectionMap[Key].size() ? this->m_SectionMap[Key] : "N/A";
+            return this->m_SectionMap[Key].size() ? this->m_SectionMap[Key] : "";
+			// if not found, should return empty string because may be "N/A" is known as a valid value
+            // you can check by using std::string::empty()
         }
 
         void LoadAttributes(const std::vector<std::string>& Lines)
         {
             for(const std::string& Line : Lines)
             {
-                if(Line.find(":") == std::string::npos)
+                if(Line.find(':') == std::string::npos)
                 {
                     continue;
                 }
-                std::vector<std::string> SplitLine = Utilities::Split(Line, ':');
+                std::vector<std::string> SplitLine = Utilities::Split(Line, ':', true);
                 if(SplitLine.size() > 1)
                 {
                     this->InsertAttribute(SplitLine[0], Utilities::Trim(SplitLine[1]));
