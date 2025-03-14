@@ -2,7 +2,7 @@
 #include <osu!parser/Parser/Utilities.hpp>
 #include <optional>
 
-static enum class TypeBitmap : std::int32_t
+static enum class HitObjectTypeBitmap : std::int32_t
 {
 	HIT_CIRCLE = 1 << 0,
 	SLIDER = 1 << 1,
@@ -35,7 +35,6 @@ namespace Parser
 		SOFT = 2,
 		DRUM = 3
 	};
-
 	struct Hitsound
 	{
 		bool whistle = false;
@@ -72,15 +71,15 @@ namespace Parser
 
 		void import(const std::int32_t value, const bool isFirstNote = false, const std::int32_t oldComboColor = 1)
 		{
-			HitCircle = isBitEnable(value, std::int32_t(TypeBitmap::HIT_CIRCLE));
-			Slider = isBitEnable(value, std::int32_t(TypeBitmap::SLIDER));
-			Spinner = isBitEnable(value, std::int32_t(TypeBitmap::SPINNER));
-			HoldNote = isBitEnable(value, std::int32_t(TypeBitmap::HOLD_NOTE));
-			isNewCombo = isBitEnable(value, std::int32_t(TypeBitmap::NEW_COMBO));
+			HitCircle = isBitEnable(value, std::int32_t(HitObjectTypeBitmap::HIT_CIRCLE));
+			Slider = isBitEnable(value, std::int32_t(HitObjectTypeBitmap::SLIDER));
+			Spinner = isBitEnable(value, std::int32_t(HitObjectTypeBitmap::SPINNER));
+			HoldNote = isBitEnable(value, std::int32_t(HitObjectTypeBitmap::HOLD_NOTE));
+			isNewCombo = isBitEnable(value, std::int32_t(HitObjectTypeBitmap::NEW_COMBO));
 
-			bool bit4 = isBitEnable(value, std::int32_t(TypeBitmap::COLOR_JUMP0));
-			bool bit5 = isBitEnable(value, std::int32_t(TypeBitmap::COLOR_JUMP1));
-			bool bit6 = isBitEnable(value, std::int32_t(TypeBitmap::COLOR_JUMP2));
+			bool bit4 = isBitEnable(value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP0));
+			bool bit5 = isBitEnable(value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP1));
+			bool bit6 = isBitEnable(value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP2));
 			std::int32_t colorJump = (bit6 << 2) | (bit5 << 1) | bit4;
 
 			if (isFirstNote) comboColor = colorJump + 1;
@@ -171,8 +170,8 @@ namespace Parser
 				EdgeHitsounds(const std::string edgeSounds_str, const std::string edgeSets_str) { import(edgeSounds_str, edgeSets_str); }
 			};
 
-			unsigned int slides = 1; // aka Repeats
-			unsigned int length = 0; // aka PixelLength
+			std::int32_t slides = 1; // aka Repeats
+			std::double_t length = 0; // aka PixelLength
 			SliderCurve curve;
 			EdgeHitsounds edgeHitsounds; // <edgeSounds + edgeSets> list
 		};
@@ -239,15 +238,11 @@ namespace Parser
 		};
 
 		std::int32_t x = 0, y = 0;
-		unsigned int time = 0;
+		std::int32_t time = 0;
 		HitObjectType type;
 		Hitsound hitSound;
 		std::optional<SliderParams> sliderParams = SliderParams();
-		std::optional<unsigned int> endTime = std::nullopt;
-		//? Future Idea: Calculate Slider's endTime
-		// Slider endTime can be calculated through slider length, but
-		// to do it we need to know SliderMultiplier, SV and beatLength, which is not provided in HitObject
-		// https://osu.ppy.sh/wiki/en/Client/File_formats/osu_%28file_format%29#holds-(osu!mania-only):~:text=length%20/%20(SliderMultiplier%20*%20100%20*%20SV)%20*%20beatLength
+		std::int32_t endTime; // Bonus
 		HitSample hitSample;
 	};
 }
