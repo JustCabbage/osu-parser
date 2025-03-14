@@ -55,26 +55,38 @@ namespace Parser
             {
                 HitObject Object;
                 const std::vector<std::string> SplitObject = Utilities::Split(ObjectString, ',');
-                Object.X = std::stoi(SplitObject[0]);
-                Object.Y = std::stoi(SplitObject[1]);
-                Object.Time = std::stoi(SplitObject[2]);
-                Object.Type = HitObjectType(std::stoi(SplitObject[3]));
-                Object.HitSound = HitSoundType(std::stoi(SplitObject[4]));
-                switch(Object.Type)
-                {
-                    case HitObjectType::SLIDER:
-                    {
-                        std::vector<std::string> SplitCurvePoints = Utilities::Split(SplitObject[5], '|');
-                        SplitCurvePoints.erase(SplitCurvePoints.begin());
-                        Object.CurveType = SplitObject[5][0];
-                        for(const std::string& PointString : SplitCurvePoints)
-                        {
-                            const std::vector<std::string> SplitPoint = Utilities::Split(PointString, ':');
-                            Object.CurvePoints.push_back({ std::stoi(SplitPoint[0]), std::stoi(SplitPoint[1]) });   
-                        }
-                        break;
-                    }
+                Object.x = std::stoi(SplitObject[0]);
+                Object.y = std::stoi(SplitObject[1]);
+                Object.time = std::stoi(SplitObject[2]);
+                Object.type = HitObjectType(std::stoi(SplitObject[3]));
+				Object.hitSound = Hitsound(std::stoi(SplitObject[4]));
+
+                // Parsing objectParams
+                /// as Slider
+                if (Object.type == HitObjectType::SLIDER) {
+                    Object.sliderParams->curve.import(SplitObject[5]);
+                    Object.sliderParams->slides = std::stoi(SplitObject[6]);
+                    Object.sliderParams->length = std::stod(SplitObject[7]);
+                    Object.sliderParams->edgeHitsounds.import(SplitObject[8], SplitObject[9]);
                 }
+                else Object.sliderParams = std::nullopt;
+                /// as Spinner
+				if (Object.type == HitObjectType::SPINNER) {
+					Object.spinnerParams->endTime = std::stoi(SplitObject[5]);
+				}
+				else Object.spinnerParams = std::nullopt;
+
+				//Parsing hitSample
+				if (Object.type == HitObjectType::SLIDER && SplitObject.size() >= 11) {
+					Object.hitSample = HitObject::HitSample(SplitObject[10]);
+				}
+                else if (Object.type == HitObjectType::SPINNER && SplitObject.size() >= 7) {
+					Object.hitSample = HitObject::HitSample(SplitObject[6]);
+                }
+				else if (Object.type == HitObjectType::HIT_CIRCLE && SplitObject.size() >= 6) {
+					Object.hitSample = HitObject::HitSample(SplitObject[5]);
+				}
+
                 this->HitObjects.push_back(Object);
             }
 
