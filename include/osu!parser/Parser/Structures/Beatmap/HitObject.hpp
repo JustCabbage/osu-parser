@@ -1,7 +1,6 @@
 #pragma once
 #include <optional>
 #include <osu!parser/Parser/Utilities.hpp>
-#include <optional>
 
 using Parser::Utilities::IsBitEnabled;
 
