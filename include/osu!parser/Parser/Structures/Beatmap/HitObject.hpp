@@ -201,7 +201,10 @@ namespace Parser
         struct HitSample
         {
             // https://osu.ppy.sh/wiki/en/Client/File_formats/osu_%28file_format%29#hitsounds:~:text=enabled%20by%20default.-,Custom%20hit%20samples,-Usage%20of%20hitSample
+        protected:
+            static constexpr char DELIMETER = ':';
 
+        public:
             SampleSetType NormalSet = SampleSetType::NO_CUSTOM;
             SampleSetType AdditionSet = SampleSetType::NO_CUSTOM;
             int Index = 0;
@@ -213,7 +216,7 @@ namespace Parser
             {
                 if (HitSampleStr.empty())
                     return; // not written
-                auto list = Utilities::Split(HitSampleStr, ':');
+                auto list = Utilities::Split(HitSampleStr, DELIMETER);
                 NormalSet = SampleSetType(std::stoi(list[0]));
                 AdditionSet = SampleSetType(std::stoi(list[1]));
                 Index = std::stoi(list[2]);
@@ -224,6 +227,20 @@ namespace Parser
                 }
             }
 
+            std::string ToString() const
+            {
+                std::string HitSampleStr;
+                HitSampleStr.append(std::to_string(std::int32_t(NormalSet)));
+                HitSampleStr.push_back(DELIMETER);
+                HitSampleStr.append(std::to_string(std::int32_t(AdditionSet)));
+                HitSampleStr.push_back(DELIMETER);
+                HitSampleStr.append(std::to_string(Index));
+                HitSampleStr.push_back(DELIMETER);
+                HitSampleStr.append(std::to_string(Volume));
+                HitSampleStr.push_back(DELIMETER);
+                if (!Filename.empty()) HitSampleStr.append(Filename);
+                return HitSampleStr;
+            }
             std::string GetHitsoundTypeFilename(const HitsoundBitmap HitsoundType)
             {
                 if (!Filename.empty())
