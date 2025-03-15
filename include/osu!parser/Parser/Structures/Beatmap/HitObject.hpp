@@ -2,6 +2,8 @@
 #include <osu!parser/Parser/Utilities.hpp>
 #include <optional>
 
+using Parser::Utilities::isBitEnable;
+
 static enum class HitObjectTypeBitmap : std::int32_t
 {
 	HIT_CIRCLE = 1 << 0,
@@ -24,7 +26,6 @@ static enum class HitsoundBitmap : std::uint8_t
 	FINISH = 1 << 2,
 	CLAP = 1 << 3
 };
-static bool isBitEnable(const std::int32_t value, const std::int32_t bitmask) { return (value & bitmask) != 0; }
 
 namespace Parser
 {
