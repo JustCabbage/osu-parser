@@ -2,7 +2,7 @@
 
 int main()
 {
-    const std::string GamePath = ""; // Your osu! path here
+    const std::string GamePath = "D://Games//osu!//"; // Your osu! path here
     const std::string SongsPath = GamePath + "\\Songs\\";
     const std::string ReplaysPath = GamePath + "\\Replays\\";
 
@@ -14,7 +14,7 @@ int main()
 
     const Parser::Beatmap ParsedBeatmap(SongsPath + Beatmap.FolderName + "\\" + Beatmap.BeatmapPath);
 
-	std::cout << "Overall Difficulty - " << ParsedBeatmap.Difficulty.OverallDifficulty << "\n";
+    std::cout << "Overall Difficulty - " << ParsedBeatmap.Difficulty.OverallDifficulty << "\n";
     std::cout << "Audio Filename - " << ParsedBeatmap.General.AudioFilename << "\n";
     std::cout << "Artist - " << ParsedBeatmap.Metadata.Artist << "\n";
     std::cout << "Approach Rate - " << ParsedBeatmap.Difficulty.ApproachRate << "\n";

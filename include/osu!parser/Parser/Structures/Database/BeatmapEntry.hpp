@@ -1,11 +1,14 @@
 #pragma once
-#include <iostream>
+#include <string>
+#include <vector>
+
 #include "TimingPointEntry.hpp"
 
 namespace Parser
 {
     struct BeatmapEntry
     {
+        std::uint32_t Size;
         std::string Artist;
         std::string ArtistUnicode;
         std::string Title;
@@ -55,4 +58,4 @@ namespace Parser
         std::uint8_t ManiaScrollSpeed;
         std::vector<TimingPointEntry> TimingPoints;
     };
-}
+} // namespace Parser

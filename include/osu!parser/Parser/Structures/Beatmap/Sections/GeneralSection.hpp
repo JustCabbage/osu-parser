@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <iostream>
+
 #include "Section.hpp"
 
 namespace Parser
@@ -8,7 +8,9 @@ namespace Parser
     class GeneralSection : public Section
     {
     public:
-        GeneralSection() {}
+        GeneralSection()
+        {
+        }
         void Parse(std::vector<std::string>& Lines) override
         {
             this->LoadAttributes(Lines);
@@ -32,6 +34,7 @@ namespace Parser
             this->WidescreenStoryboard = this->GetAttribute("WidescreenStoryboard");
             this->SamplesMatchPlaybackRate = this->GetAttribute("SamplesMatchPlaybackRate");
         }
+
     public:
         std::string AudioFilename;
         std::string AudioLeadIn;
@@ -52,4 +55,4 @@ namespace Parser
         std::string WidescreenStoryboard;
         std::string SamplesMatchPlaybackRate;
     };
-}
+} // namespace Parser

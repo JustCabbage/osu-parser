@@ -19,8 +19,8 @@ namespace Parser
 
 			void import(const std::int32_t effect)
 			{
-				kiai = isBitEnable(effect, std::int32_t(EffectBitmap::KIAI));
-				omitFirstBarline = isBitEnable(effect, std::int32_t(EffectBitmap::OMIT_FIRST_BARLINE));
+				kiai = Utilities::IsBitEnabled(effect, std::int32_t(EffectBitmap::KIAI));
+				omitFirstBarline = Utilities::IsBitEnabled(effect, std::int32_t(EffectBitmap::OMIT_FIRST_BARLINE));
 			}
 			std::int32_t to_int() const
 			{

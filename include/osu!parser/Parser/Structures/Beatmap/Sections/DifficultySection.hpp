@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <iostream>
+
 #include "Section.hpp"
 
 namespace Parser
@@ -8,11 +8,13 @@ namespace Parser
     class DifficultySection : public Section
     {
     public:
-        DifficultySection() {}
+        DifficultySection()
+        {
+        }
         void Parse(std::vector<std::string>& Lines) override
         {
             this->LoadAttributes(Lines);
-            
+
             this->HPDrainRate = this->GetAttribute("HPDrainRate");
             this->CircleSize = this->GetAttribute("CircleSize");
             this->OverallDifficulty = this->GetAttribute("OverallDifficulty");
@@ -20,6 +22,7 @@ namespace Parser
             this->SliderMultiplier = this->GetAttribute("SliderMultiplier");
             this->SliderTickRate = this->GetAttribute("SliderTickRate");
         }
+
     public:
         std::string HPDrainRate;
         std::string CircleSize;
@@ -28,4 +31,4 @@ namespace Parser
         std::string SliderMultiplier;
         std::string SliderTickRate;
     };
-}
+} // namespace Parser

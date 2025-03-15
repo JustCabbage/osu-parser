@@ -40,5 +40,5 @@ namespace Parser::Utilities
         return Input.erase(Input.find_last_not_of(' ')+1).erase(0, Input.find_first_not_of(' '));
     }
 
-    inline bool isBitEnable(const std::int32_t value, const std::int32_t bitmask) { return (value & bitmask) != 0; }
+    inline bool IsBitEnabled(const std::int32_t value, const std::int32_t bitmask) { return (value & bitmask) != 0; }
 }
