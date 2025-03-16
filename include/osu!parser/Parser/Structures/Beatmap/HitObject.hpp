@@ -39,19 +39,23 @@ namespace Parser
     };
     struct Hitsound
     {
+        bool Normal = false;
         bool Whistle = false;
         bool Finish = false;
         bool Clap = false;
 
         void Import(const std::int32_t HitSound)
         {
+			Normal = IsBitEnabled(HitSound, std::int32_t(HitsoundBitmap::NORMAL));
             Whistle = IsBitEnabled(HitSound, std::int32_t(HitsoundBitmap::WHISTLE));
             Finish = IsBitEnabled(HitSound, std::int32_t(HitsoundBitmap::FINISH));
             Clap = IsBitEnabled(HitSound, std::int32_t(HitsoundBitmap::CLAP));
         }
         std::int32_t ToInt() const
         {
-            std::int32_t Hitsound = std::int32_t(HitsoundBitmap::NORMAL);
+			std::int32_t Hitsound = 0;
+            if (Normal)
+				Hitsound |= std::int32_t(HitsoundBitmap::NORMAL);
             if (Whistle)
                 Hitsound |= std::int32_t(HitsoundBitmap::WHISTLE);
             if (Finish)
@@ -75,7 +79,7 @@ namespace Parser
         bool HoldNote = false; // osu!mania
 
         bool IsNewCombo = false;
-        std::int32_t ComboHax = 0;
+        std::int32_t ColourHax = 0;
 
         void Import(const std::int32_t Value)
         {
@@ -88,7 +92,7 @@ namespace Parser
             bool bit4 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP0));
             bool bit5 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP1));
             bool bit6 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP2));
-            ComboHax = (bit6 << 2) | (bit5 << 1) | bit4;
+            ColourHax = (bit6 << 2) | (bit5 << 1) | bit4;
         }
 
         HitObjectType() = default;
