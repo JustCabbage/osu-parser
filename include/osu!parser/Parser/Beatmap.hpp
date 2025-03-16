@@ -83,7 +83,7 @@ namespace Parser
                 Object.X = std::stoi(SplitObject[0]);
                 Object.Y = std::stoi(SplitObject[1]);
                 Object.Time = std::stoi(SplitObject[2]);
-                Object.Type = HitObjectType(std::stoi(SplitObject[3]), (this->HitObjects.empty()), (this->HitObjects.empty()) ? 1 : (this->HitObjects.back().Type.ComboColor));
+                Object.Type = HitObjectType(std::stoi(SplitObject[3]));
                 Object.Hitsound = Hitsound(std::stoi(SplitObject[4]));
 
                 // Parsing objectParams

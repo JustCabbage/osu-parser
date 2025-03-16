@@ -75,9 +75,9 @@ namespace Parser
         bool HoldNote = false; // osu!mania
 
         bool IsNewCombo = false;
-        std::int32_t ComboColor = 1;
+        std::int32_t ColorHax = 0;
 
-        void Import(const std::int32_t Value, const bool IsFirstNote = false, const std::int32_t OldComboColor = 1)
+        void Import(const std::int32_t Value)
         {
             HitCircle = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::HIT_CIRCLE));
             Slider = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::SLIDER));
@@ -88,18 +88,13 @@ namespace Parser
             bool bit4 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP0));
             bool bit5 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP1));
             bool bit6 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP2));
-            std::int32_t ColorJump = (bit6 << 2) | (bit5 << 1) | bit4;
-
-            if (IsFirstNote)
-                ComboColor = ColorJump + 1;
-            else
-                ComboColor = (IsNewCombo) ? ((OldComboColor + ColorJump) % 8 + 1) : OldComboColor;
+            ColorHax = (bit6 << 2) | (bit5 << 1) | bit4;
         }
 
         HitObjectType() = default;
-        HitObjectType(const std::int32_t Value, const bool IsFirstNote = false, const std::int32_t OldComboColor = 1)
+        HitObjectType(const std::int32_t Value)
         {
-            Import(Value, IsFirstNote, OldComboColor);
+            Import(Value);
         }
     };
 
