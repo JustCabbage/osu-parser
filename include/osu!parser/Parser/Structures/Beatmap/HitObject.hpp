@@ -75,7 +75,7 @@ namespace Parser
         bool HoldNote = false; // osu!mania
 
         bool IsNewCombo = false;
-        std::int32_t ColorHax = 0;
+        std::int32_t ComboHax = 0;
 
         void Import(const std::int32_t Value)
         {
@@ -88,7 +88,7 @@ namespace Parser
             bool bit4 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP0));
             bool bit5 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP1));
             bool bit6 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP2));
-            ColorHax = (bit6 << 2) | (bit5 << 1) | bit4;
+            ComboHax = (bit6 << 2) | (bit5 << 1) | bit4;
         }
 
         HitObjectType() = default;
