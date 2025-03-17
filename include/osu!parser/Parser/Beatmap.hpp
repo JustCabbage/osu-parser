@@ -11,6 +11,7 @@
 #include "Structures/Beatmap/Sections/GeneralSection.hpp"
 #include "Structures/Beatmap/Sections/MetadataSection.hpp"
 #include "Structures/Beatmap/TimingPoint.hpp"
+#include "Structures/Beatmap/Sections/ColourSection.hpp"
 
 namespace Parser
 {
@@ -49,6 +50,7 @@ namespace Parser
             this->Metadata.Parse(this->m_Sections["Metadata"]);
             this->Editor.Parse(this->m_Sections["Editor"]);
             this->Difficulty.Parse(this->m_Sections["Difficulty"]);
+			this->Colour.Parse(this->m_Sections["Colours"]);
 
 			for (const std::string& PointString : this->m_Sections["TimingPoints"])
 			{
@@ -177,6 +179,7 @@ namespace Parser
 		MetadataSection Metadata;
 		EditorSection Editor;
 		DifficultySection Difficulty;
+		ColourSection Colour;
 		std::int32_t Version = 14;
 		std::vector<TimingPoint> TimingPoints = {};
 		std::vector<HitObject> HitObjects = {};
