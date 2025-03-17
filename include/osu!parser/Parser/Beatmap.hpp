@@ -179,7 +179,7 @@ namespace Parser
 		MetadataSection Metadata;
 		EditorSection Editor;
 		DifficultySection Difficulty;
-		ColourSection Colour;
+		ColourSection Colours;
 		std::int32_t Version = 14;
 		std::vector<TimingPoint> TimingPoints = {};
 		std::vector<HitObject> HitObjects = {};

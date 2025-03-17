@@ -9,9 +9,9 @@ namespace Parser
 {
 	struct Colour
 	{
-		std::int32_t r;
-		std::int32_t g;
-		std::int32_t b;
+		int32_t r;
+		int32_t g;
+		int32_t b;
 
 		Colour(const std::string& value)
 		{
