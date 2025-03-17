@@ -50,7 +50,7 @@ namespace Parser
             this->Metadata.Parse(this->m_Sections["Metadata"]);
             this->Editor.Parse(this->m_Sections["Editor"]);
             this->Difficulty.Parse(this->m_Sections["Difficulty"]);
-			this->Colour.Parse(this->m_Sections["Colours"]);
+			this->Colours.Parse(this->m_Sections["Colours"]);
 
 			for (const std::string& PointString : this->m_Sections["TimingPoints"])
 			{
