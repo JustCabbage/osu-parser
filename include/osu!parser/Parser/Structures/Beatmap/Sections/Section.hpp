@@ -13,7 +13,7 @@ namespace Parser
     protected:
         std::string GetAttribute(const std::string& Key)
         {
-            return this->m_SectionMap[Key].size() ? this->m_SectionMap[Key] : "";
+            return !this->m_SectionMap[Key].empty() ? this->m_SectionMap[Key] : "";
             // if not found, should return empty string because may be "N/A" is known as a valid value
             // you can check by using std::string::empty()
         }
@@ -27,6 +27,8 @@ namespace Parser
                     continue;
                 }
                 std::vector<std::string> SplitLine = Utilities::Split(Line, ':', true);
+                for (auto &str: SplitLine) str = Utilities::Trim(str);
+
                 if (SplitLine.size() > 1)
                 {
                     this->InsertAttribute(SplitLine[0], Utilities::Trim(SplitLine[1]));

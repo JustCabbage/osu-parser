@@ -11,6 +11,7 @@
 #include "Structures/Beatmap/Sections/GeneralSection.hpp"
 #include "Structures/Beatmap/Sections/MetadataSection.hpp"
 #include "Structures/Beatmap/TimingPoint.hpp"
+#include "Structures/Beatmap/Sections/ColourSection.hpp"
 
 namespace Parser
 {
@@ -49,27 +50,33 @@ namespace Parser
             this->Metadata.Parse(this->m_Sections["Metadata"]);
             this->Editor.Parse(this->m_Sections["Editor"]);
             this->Difficulty.Parse(this->m_Sections["Difficulty"]);
+			this->Colours.Parse(this->m_Sections["Colours"]);
 
-            for (const std::string& PointString : this->m_Sections["TimingPoints"])
-            {
-                TimingPoint Point;
-                const std::vector<std::string> SplitPoint = Utilities::Split(PointString, ',');
-                Point.Time = std::stoi(SplitPoint[0]);
-                Point.BeatLength = std::stof(SplitPoint[1]);
-                Point.Meter = std::stoi(SplitPoint[2]);
-                Point.SampleSet = std::stoi(SplitPoint[3]);
-                Point.SampleIndex = std::stoi(SplitPoint[4]);
-                Point.Volume = std::stoi(SplitPoint[5]);
-                Point.Uninherited = (std::stoi(SplitPoint[6]) == 1);
-                Point.Effects = std::stoi(SplitPoint[7]);
+			for (const std::string& PointString : this->m_Sections["TimingPoints"])
+			{
+				TimingPoint Point;
+				const std::vector<std::string> SplitPoint = Utilities::Split(PointString, ',');
+				Point.Time = std::stoi(SplitPoint[0]);
+				Point.BeatLength = std::stof(SplitPoint[1]);
+				Point.Meter = std::stoi(SplitPoint[2]);
+				Point.SampleSet = SampleSetType(std::stoi(SplitPoint[3]));
+				Point.SampleIndex = std::stoi(SplitPoint[4]);
+				Point.Volume = std::stoi(SplitPoint[5]);
+				Point.Uninherited = (std::stoi(SplitPoint[6]) == 1);
+				if (SplitPoint.size()>=8) Point.Effects = TimingPoint::Effect(std::stoi(SplitPoint[7]));
+				this->TimingPoints.push_back(Point);
+			}
+			std::sort(this->TimingPoints.begin(), this->TimingPoints.end());
 
-                if (Point.Uninherited)
-                    this->UninheritedTimingPoints.push_back(Point);
-                else
-                    this->InheritedTimingPoints.push_back(Point);
-            }
-            std::sort(this->UninheritedTimingPoints.begin(), this->UninheritedTimingPoints.end());
-            std::sort(this->InheritedTimingPoints.begin(), this->InheritedTimingPoints.end());
+			// Get 
+			std::vector<TimingPoint> UninheritedTimingPoints = {};
+			std::vector<TimingPoint> InheritedTimingPoints = {};
+			for (const TimingPoint& Point : this->TimingPoints)
+			{
+				if (Point.Uninherited) UninheritedTimingPoints.push_back(Point);
+				else InheritedTimingPoints.push_back(Point);
+			}
+
 
             for (const std::string& ObjectString : this->m_Sections["HitObjects"])
             {
@@ -78,7 +85,7 @@ namespace Parser
                 Object.X = std::stoi(SplitObject[0]);
                 Object.Y = std::stoi(SplitObject[1]);
                 Object.Time = std::stoi(SplitObject[2]);
-                Object.Type = HitObjectType(std::stoi(SplitObject[3]), (this->HitObjects.empty()), (this->HitObjects.empty()) ? 1 : (this->HitObjects.back().Type.ComboColor));
+                Object.Type = HitObjectType(std::stoi(SplitObject[3]));
                 Object.Hitsound = Hitsound(std::stoi(SplitObject[4]));
 
                 // Parsing objectParams
@@ -123,70 +130,61 @@ namespace Parser
                     }
                 }
 
-                // Calculate endTime
-                if (!Object.Type.HoldNote)
-                {
-                    if (Object.Type.HitCircle)
-                    {
-                        Object.EndTime = Object.Time;
-                    }
-                    else if (Object.Type.Slider)
-                    {
-                        if (!this->Difficulty.SliderMultiplier.empty() && !this->UninheritedTimingPoints.empty())
-                        {
-                            TimingPoint currentTimeAsTimepoint;
-                            currentTimeAsTimepoint.Time = Object.Time;
+				// Calculate endTime
+				if (!Object.Type.HoldNote)
+					if (Object.Type.HitCircle) { Object.EndTime = Object.Time; }
+					else if (Object.Type.Slider) {
+						if (!this->Difficulty.SliderMultiplier.empty() && !UninheritedTimingPoints.empty())
+						{
+							TimingPoint currentTimeAsTimepoint;
+							currentTimeAsTimepoint.Time = Object.Time;
 
                             // Get SliderMultiplier
                             double_t SliderMultiplier = std::stod(this->Difficulty.SliderMultiplier);
 
-                            // Get BeatLength
-                            auto CurrentUninheritedTimingPoint =
-                                std::lower_bound(this->UninheritedTimingPoints.begin(), this->UninheritedTimingPoints.end(), currentTimeAsTimepoint);
-                            if (CurrentUninheritedTimingPoint == this->UninheritedTimingPoints.end())
-                                CurrentUninheritedTimingPoint = this->UninheritedTimingPoints.begin();
-                            double_t BeatLength = CurrentUninheritedTimingPoint->BeatLength;
+							// Get BeatLength
+							auto CurrentUninheritedTimingPoint =
+								std::lower_bound(UninheritedTimingPoints.begin(), UninheritedTimingPoints.end(), currentTimeAsTimepoint);
+							if (CurrentUninheritedTimingPoint == UninheritedTimingPoints.end())
+								CurrentUninheritedTimingPoint = UninheritedTimingPoints.begin();
+							double_t BeatLength = CurrentUninheritedTimingPoint->BeatLength;
 
-                            // Get SV
-                            double_t SV;
-                            auto CurrentInheritedTimingPoint = std::lower_bound(this->InheritedTimingPoints.begin(), this->InheritedTimingPoints.end(), currentTimeAsTimepoint);
-                            if (CurrentInheritedTimingPoint == this->InheritedTimingPoints.end())
-                                SV = 1;
-                            else
-                                SV = SliderMultiplier * (100.0 / std::abs(CurrentInheritedTimingPoint->BeatLength));
+							// Get SV
+							double_t SV;
+							auto CurrentInheritedTimingPoint =
+								std::lower_bound(InheritedTimingPoints.begin(), InheritedTimingPoints.end(), currentTimeAsTimepoint);
+							if (CurrentInheritedTimingPoint == InheritedTimingPoints.end()) SV = 1;
+							else SV = SliderMultiplier * (100.0 / std::abs(CurrentInheritedTimingPoint->BeatLength));
 
-                            Object.EndTime = Object.Time + Object.SliderParameters->Length / (SliderMultiplier * 100 * SV) * BeatLength * Object.SliderParameters->Slides;
-                        }
-                        else
-                            Object.EndTime = Object.Time;
-                    }
-                }
-                this->HitObjects.push_back(Object);
-            }
-            std::sort(this->HitObjects.begin(), this->HitObjects.end(), [](const HitObject& A, const HitObject& B) { return A.Time < B.Time; });
-        }
+							Object.EndTime =
+								Object.Time + int32_t(Object.SliderParameters->Length / (SliderMultiplier * 100 * SV) * BeatLength * Object.SliderParameters->Slides);
+						}
+						else Object.EndTime = Object.Time;
+					}
 
-    private:
-        void Reset()
-        {
-            this->Version = 14;
-            this->UninheritedTimingPoints.clear();
-            this->InheritedTimingPoints.clear();
-            this->HitObjects.clear();
-        }
-
-    public:
-        GeneralSection General;
-        MetadataSection Metadata;
-        EditorSection Editor;
-        DifficultySection Difficulty;
-        std::int32_t Version = 14;
-        std::vector<TimingPoint> UninheritedTimingPoints = {};
-        std::vector<TimingPoint> InheritedTimingPoints = {};
-        std::vector<HitObject> HitObjects = {};
-
-    private:
-        std::ifstream m_CurrentStream;
-        std::map<std::string, std::vector<std::string>> m_Sections = {};
-    };
-} // namespace Parser
+				this->HitObjects.push_back(Object);
+			}
+			std::sort(this->HitObjects.begin(), this->HitObjects.end(),
+				[](const HitObject& A, const HitObject& B) { return A.Time < B.Time; });
+		}
+	private:
+		void Reset()
+		{
+			this->Version = 14;
+			TimingPoints.clear();
+			this->HitObjects.clear();
+		}
+	public:
+		GeneralSection General;
+		MetadataSection Metadata;
+		EditorSection Editor;
+		DifficultySection Difficulty;
+		ColourSection Colours;
+		std::int32_t Version = 14;
+		std::vector<TimingPoint> TimingPoints = {};
+		std::vector<HitObject> HitObjects = {};
+	private:
+		std::ifstream m_CurrentStream;
+		std::map<std::string, std::vector<std::string>> m_Sections = {};
+	};
+}

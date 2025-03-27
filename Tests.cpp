@@ -20,7 +20,7 @@ int main()
     std::cout << "Approach Rate - " << ParsedBeatmap.Difficulty.ApproachRate << "\n";
     std::cout << "Grid Size - " << ParsedBeatmap.Editor.GridSize << "\n";
     std::cout << "Total Hit Objects - " << ParsedBeatmap.HitObjects.size() << "\n";
-    std::cout << "Total Timing Points - " << ParsedBeatmap.InheritedTimingPoints.size() + ParsedBeatmap.UninheritedTimingPoints.size() << "\n";
+    std::cout << "Total Timing Points - " << ParsedBeatmap.TimingPoints.size() << "\n";
 
     const Parser::Replay ParsedReplay(ReplaysPath + "MyReplay.osr");
 

@@ -2,6 +2,8 @@
 #include <optional>
 #include <osu!parser/Parser/Utilities.hpp>
 
+using Parser::Utilities::IsBitEnabled;
+
 enum class HitObjectTypeBitmap : std::int32_t
 {
     HIT_CIRCLE = 1 << 0,
@@ -26,11 +28,6 @@ enum class HitsoundBitmap : std::uint8_t
     CLAP = 1 << 3
 };
 
-static bool IsBitEnabled(const std::int32_t Value, const std::int32_t BitMask)
-{
-    return (Value & BitMask) != 0;
-}
-
 namespace Parser
 {
     enum class SampleSetType : std::int32_t
@@ -42,19 +39,23 @@ namespace Parser
     };
     struct Hitsound
     {
+        bool Normal = false;
         bool Whistle = false;
         bool Finish = false;
         bool Clap = false;
 
         void Import(const std::int32_t HitSound)
         {
+			Normal = IsBitEnabled(HitSound, std::int32_t(HitsoundBitmap::NORMAL));
             Whistle = IsBitEnabled(HitSound, std::int32_t(HitsoundBitmap::WHISTLE));
             Finish = IsBitEnabled(HitSound, std::int32_t(HitsoundBitmap::FINISH));
             Clap = IsBitEnabled(HitSound, std::int32_t(HitsoundBitmap::CLAP));
         }
         std::int32_t ToInt() const
         {
-            std::int32_t Hitsound = std::int32_t(HitsoundBitmap::NORMAL);
+			std::int32_t Hitsound = 0;
+            if (Normal)
+				Hitsound |= std::int32_t(HitsoundBitmap::NORMAL);
             if (Whistle)
                 Hitsound |= std::int32_t(HitsoundBitmap::WHISTLE);
             if (Finish)
@@ -78,9 +79,9 @@ namespace Parser
         bool HoldNote = false; // osu!mania
 
         bool IsNewCombo = false;
-        std::int32_t ComboColor = 1;
+        std::int32_t ColourHax = 0;
 
-        void Import(const std::int32_t Value, const bool IsFirstNote = false, const std::int32_t OldComboColor = 1)
+        void Import(const std::int32_t Value)
         {
             HitCircle = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::HIT_CIRCLE));
             Slider = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::SLIDER));
@@ -88,21 +89,16 @@ namespace Parser
             HoldNote = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::HOLD_NOTE));
             IsNewCombo = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::NEW_COMBO));
 
-            bool bit4 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP0));
-            bool bit5 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP1));
-            bool bit6 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP2));
-            std::int32_t ColorJump = (bit6 << 2) | (bit5 << 1) | bit4;
-
-            if (IsFirstNote)
-                ComboColor = ColorJump + 1;
-            else
-                ComboColor = (IsNewCombo) ? ((OldComboColor + ColorJump) % 8 + 1) : OldComboColor;
+            int32_t bit4 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP0));
+            int32_t bit5 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP1));
+            int32_t bit6 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP2));
+            ColourHax = (bit6 << 2) | (bit5 << 1) | bit4;
         }
 
         HitObjectType() = default;
-        HitObjectType(const std::int32_t Value, const bool IsFirstNote = false, const std::int32_t OldComboColor = 1)
+        HitObjectType(const std::int32_t Value)
         {
-            Import(Value, IsFirstNote, OldComboColor);
+            Import(Value);
         }
     };
 
@@ -204,7 +200,10 @@ namespace Parser
         struct HitSample
         {
             // https://osu.ppy.sh/wiki/en/Client/File_formats/osu_%28file_format%29#hitsounds:~:text=enabled%20by%20default.-,Custom%20hit%20samples,-Usage%20of%20hitSample
+        protected:
+            static constexpr char DELIMETER = ':';
 
+        public:
             SampleSetType NormalSet = SampleSetType::NO_CUSTOM;
             SampleSetType AdditionSet = SampleSetType::NO_CUSTOM;
             int Index = 0;
@@ -216,7 +215,7 @@ namespace Parser
             {
                 if (HitSampleStr.empty())
                     return; // not written
-                auto list = Utilities::Split(HitSampleStr, ':');
+                auto list = Utilities::Split(HitSampleStr, DELIMETER);
                 NormalSet = SampleSetType(std::stoi(list[0]));
                 AdditionSet = SampleSetType(std::stoi(list[1]));
                 Index = std::stoi(list[2]);
@@ -227,6 +226,20 @@ namespace Parser
                 }
             }
 
+            std::string ToString() const
+            {
+                std::string HitSampleStr;
+                HitSampleStr.append(std::to_string(std::int32_t(NormalSet)));
+                HitSampleStr.push_back(DELIMETER);
+                HitSampleStr.append(std::to_string(std::int32_t(AdditionSet)));
+                HitSampleStr.push_back(DELIMETER);
+                HitSampleStr.append(std::to_string(Index));
+                HitSampleStr.push_back(DELIMETER);
+                HitSampleStr.append(std::to_string(Volume));
+                HitSampleStr.push_back(DELIMETER);
+                if (!Filename.empty()) HitSampleStr.append(Filename);
+                return HitSampleStr;
+            }
             std::string GetHitsoundTypeFilename(const HitsoundBitmap HitsoundType)
             {
                 if (!Filename.empty())
