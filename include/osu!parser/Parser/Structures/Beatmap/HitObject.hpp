@@ -89,9 +89,9 @@ namespace Parser
             HoldNote = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::HOLD_NOTE));
             IsNewCombo = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::NEW_COMBO));
 
-            bool bit4 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP0));
-            bool bit5 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP1));
-            bool bit6 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP2));
+            int32_t bit4 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP0));
+            int32_t bit5 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP1));
+            int32_t bit6 = IsBitEnabled(Value, std::int32_t(HitObjectTypeBitmap::COLOR_JUMP2));
             ColourHax = (bit6 << 2) | (bit5 << 1) | bit4;
         }
 

@@ -2,7 +2,7 @@
 #include <osu!parser/Parser/Structures/Beatmap/HitObject.hpp>
 #include <osu!parser/Parser/Utilities.hpp>
 
-static enum class EffectBitmap : std::int32_t
+enum class EffectBitmap : std::int32_t
 {
 	KIAI = 1 << 0,
 	OMIT_FIRST_BARLINE = 1 << 3,

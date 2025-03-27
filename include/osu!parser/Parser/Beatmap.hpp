@@ -157,7 +157,7 @@ namespace Parser
 							else SV = SliderMultiplier * (100.0 / std::abs(CurrentInheritedTimingPoint->BeatLength));
 
 							Object.EndTime =
-								Object.Time + Object.SliderParameters->Length / (SliderMultiplier * 100 * SV) * BeatLength * Object.SliderParameters->Slides;
+								Object.Time + int32_t(Object.SliderParameters->Length / (SliderMultiplier * 100 * SV) * BeatLength * Object.SliderParameters->Slides);
 						}
 						else Object.EndTime = Object.Time;
 					}
