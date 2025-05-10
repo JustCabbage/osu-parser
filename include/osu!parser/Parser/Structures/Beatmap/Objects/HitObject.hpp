@@ -237,8 +237,8 @@ namespace OsuParser::Beatmap::Objects::HitObject
                     }
                     while (Object.SliderParameters->edgeSounds.size() <= Object.SliderParameters->Slides)
                     {
-                        Object.SliderParameters->edgeSounds.emplace_back();
-                        Object.SliderParameters->edgeSets.emplace_back();
+                        Object.SliderParameters->edgeSounds.emplace_back(Object.Hitsound);
+                        Object.SliderParameters->edgeSets.emplace_back(Object.Hitsample);
                     }
                 }
                 else if (Object.type.Spinner)

@@ -5,7 +5,7 @@
 
 namespace OsuParser::Beatmap::Objects::TimingPoint
 {
-    enum class SampleSet : std::int32_t
+    enum class SampleSet : std::uint8_t
     {
         NO_CUSTOM = 0,
         NORMAL = 1,
