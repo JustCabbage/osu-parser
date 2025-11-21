@@ -20,7 +20,7 @@ int main()
 {
     const std::string GamePath = std::string(getenv("localappdata")) + "\\osu!\\";
 
-    Parser::Database ParsedDatabase(GamePath + "osu!.db");
+    OsuParser::Database ParsedDatabase(GamePath + "osu!.db");
 
     for(const auto& Beatmap : ParsedDatabase.Beatmaps)
     {
@@ -37,7 +37,7 @@ int main()
 {
     const std::string SongsPath = std::string(getenv("localappdata")) + "\\osu!\\Songs\\RandomBeatmap\\Beatmap.osu";
     
-    Parser::Beatmap ParsedBeatmap(SongsPath);
+    OsuParser::Beatmap ParsedBeatmap(SongsPath);
 
     std::cout << "Audio Filename - " << ParsedBeatmap.General.AudioFilename << "\n";
     std::cout << "Total Hit Objects - " << ParsedBeatmap.HitObjects.size() << "\n";
@@ -53,7 +53,7 @@ int main()
 {
     const std::string ReplayPath = std::string(std::getenv("localappdata")) + "\\osu!\\Replays\\MyReplay.osr";
     
-    Parser::Replay ParsedReplay(ReplayPath);
+    OsuParser::Replay ParsedReplay(ReplayPath);
 
     std::cout << "Parsed " << ParsedReplay.Actions.size() << " Replay Actions\n";
     std::cout << "Replay Score - " << ParsedReplay.Score << "\n";

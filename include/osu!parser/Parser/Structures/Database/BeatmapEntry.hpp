@@ -4,7 +4,7 @@
 
 #include "TimingPointEntry.hpp"
 
-namespace Parser
+namespace OsuParser
 {
     struct BeatmapEntry
     {

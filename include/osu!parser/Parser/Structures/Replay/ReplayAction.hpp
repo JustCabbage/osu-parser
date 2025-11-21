@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 
-namespace Parser
+namespace OsuParser
 {
     struct ReplayAction
     {

@@ -3,9 +3,9 @@
 
 #include "Section.hpp"
 
-namespace Parser
+namespace OsuParser::Beatmap::Sections::Editor
 {
-    class EditorSection : public Section
+    class EditorSection final : public Section
     {
     public:
         EditorSection()

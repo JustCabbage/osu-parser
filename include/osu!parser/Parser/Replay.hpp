@@ -7,7 +7,7 @@
 #include "Structures/Replay/ReplayAction.hpp"
 #include "Dependencies/pocketlzma/pocketlzma.hpp"
 
-namespace Parser
+namespace OsuParser
 {
     class Replay
     {

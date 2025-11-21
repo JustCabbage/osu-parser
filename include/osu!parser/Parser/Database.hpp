@@ -7,7 +7,7 @@
 #include "Structures/Database/BeatmapEntry.hpp"
 #include "Structures/Database/Enums.hpp"
 
-namespace Parser
+namespace OsuParser
 {
     class Database
     {

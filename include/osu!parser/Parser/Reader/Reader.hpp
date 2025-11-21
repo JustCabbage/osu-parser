@@ -3,7 +3,7 @@
 #include <iostream>
 #include <any>
 
-namespace Parser
+namespace OsuParser
 {
     class Reader
     {
